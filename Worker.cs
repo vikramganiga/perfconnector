@@ -54,19 +54,51 @@ namespace Performance
 
                 Double cpuCounterValue = (Double)cpuCounter.NextValue();
                 Double ramCounterValue = (Double) ramCounter.NextValue();
-                Stats stats = new Stats(){ CPU = cpuCounterValue, RAM = ramCounterValue };
-               
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-                var todoItemJson = new StringContent(
-                                    JsonSerializer.Serialize(stats),
-                                    System.Text.Encoding.UTF8,
-                                    "application/json");     
+
+                // CPU
+                PeformanceEntity cpuPeformanceEntity = new PeformanceEntity(){
+                    type = Type.cpuusage,
+                    device = "1.1.1.1",
+                    connector = "windows connector",
+                    usage = cpuCounterValue.ToString(),
+                    process = "ms word"
+                };
+                
+                //Stats stats = new Stats(){ CPU = cpuCounterValue, RAM = ramCounterValue };
                 logger.LogInformation($"CPU Percentage: {cpuCounterValue}, RAM in MB: {ramCounterValue}, Url: {url}");
-                var response = await client.PostAsync(url, todoItemJson);
-                if (response.IsSuccessStatusCode)
-                    logger.LogInformation("pushed successfully.", url);
+
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+                var cpuPeformanceEntityJson = new StringContent(
+                                    JsonSerializer.Serialize(cpuPeformanceEntity),
+                                    System.Text.Encoding.UTF8,
+                                    "application/json"); 
+                                        
+                var cpuResponse = await client.PostAsync(url, cpuPeformanceEntityJson);
+
+                if (cpuResponse.IsSuccessStatusCode)
+                    logger.LogInformation("cpu pushed successfully.", url);
                 else
-                    logger.LogWarning("pushed failed", url);
+                    logger.LogWarning("cpu pushed failed", url);
+
+                //memory
+                PeformanceEntity memPeformanceEntity = new PeformanceEntity(){
+                    type = Type.memoryusage,
+                    device = "1.1.1.1",
+                    connector = "windows connector",
+                    process = "ms word",
+                    usage = ramCounterValue.ToString(),
+                };
+                var memPeformanceEntityJson = new StringContent(
+                                JsonSerializer.Serialize(memPeformanceEntity),
+                                System.Text.Encoding.UTF8,
+                                "application/json"); 
+                                        
+                var memResponse = await client.PostAsync(url, memPeformanceEntityJson);
+
+                if (memResponse.IsSuccessStatusCode)
+                    logger.LogInformation("mem pushed successfully.", url);
+                else
+                    logger.LogWarning("mem pushed failed", url);
             }
             catch (Exception ex)
             {
