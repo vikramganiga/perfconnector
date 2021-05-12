@@ -73,7 +73,7 @@ namespace Performance
                                     System.Text.Encoding.UTF8,
                                     "application/json"); 
                                         
-                var cpuResponse = await client.PostAsync(url, cpuPeformanceEntityJson);
+                var cpuResponse = await client.PostAsync(url + "cpuusage", cpuPeformanceEntityJson);
 
                 if (cpuResponse.IsSuccessStatusCode)
                     logger.LogInformation("cpu pushed successfully.", url);
@@ -93,7 +93,7 @@ namespace Performance
                                 System.Text.Encoding.UTF8,
                                 "application/json"); 
                                         
-                var memResponse = await client.PostAsync(url, memPeformanceEntityJson);
+                var memResponse = await client.PostAsync(url + "memoryusage", memPeformanceEntityJson);
 
                 if (memResponse.IsSuccessStatusCode)
                     logger.LogInformation("mem pushed successfully.", url);
